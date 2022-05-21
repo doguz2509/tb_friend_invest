@@ -1,0 +1,4 @@
+PyYAML~=6.0
+aiogram~=2.20
+setuptools
+wheel~=0.37.1
