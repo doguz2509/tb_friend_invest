@@ -4,7 +4,7 @@ ENV WORK_DIR=/opt
 ENV PROJECT_DIR=project
 ENV REQUIREMENTS_TXT=requirements.txt
 ENV TOKEN=''
-ENV VERSION=1.0.0
+ENV VERSION=0.0.1
 ENV LEVEL=INFO
 
 RUN python3 -m pip install --upgrade pip \
