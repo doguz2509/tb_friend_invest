@@ -1,6 +1,7 @@
-from .share_calculator import ShareCalculator
-
+from . import share_calculator
+from . import utils
 
 __all__ = [
-    'ShareCalculator'
+    'share_calculator',
+    'utils'
 ]

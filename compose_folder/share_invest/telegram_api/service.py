@@ -8,7 +8,10 @@ from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 from aiogram.utils.exceptions import NetworkError
 
-from ..utils import Singleton
+try:
+    from ..utils import Singleton
+except (ImportError, ValueError, ModuleNotFoundError):
+    from compose_folder.share_invest.utils import Singleton
 
 
 logger = logging.getLogger(os.path.split(__file__)[-1])

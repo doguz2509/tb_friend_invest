@@ -46,7 +46,8 @@ class ShareCalculator:
 
     @property
     def purchase(self):
-        return f"Price: {self._price}; Count: {self._count}"
+        return dict(price=self._price, count=self._count)
+        # return f"Price: {self._price}; Count: {self._count}"
 
     def set_amount(self, amount: float, append=False):
         _amount = (self._price + amount) if append else amount
@@ -59,6 +60,10 @@ class ShareCalculator:
         logger.info(f"{self}::set_units: {units}")
 
     @property
+    def invoice_ready(self) -> bool:
+        return sum(self._participants.values()) >= self._price
+
+    @property
     def invoice(self):
         assert self._ready_for_invoice, \
             f"""Overall purchase amount not reached; 
@@ -67,3 +72,8 @@ Continue to add or update participant involvement"""
         return {name: result_item(amount / self._price * self._count, amount,
                                   self._participant_change.get(name, 0))
                 for name, amount in self._participants.items()}
+
+
+__all__ = [
+    'ShareCalculator'
+]
