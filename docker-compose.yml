@@ -6,5 +6,5 @@ services:
       dockerfile: Dockerfile
     image: tg_bot_share_invest
     environment:
-      TOKEN: 5219827139:AAG957jn4MjYflZ--uM6-5xiWS1ko0MahNg
+      TOKEN: 
     restart: always
