@@ -7,6 +7,7 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 from aiogram.utils.exceptions import NetworkError
+from aiohttp import ClientOSError
 
 try:
     from ..utils import Singleton
@@ -69,10 +70,11 @@ class _service:
                     raise
                 logging.warning(f"Cannot restart service for {self.counter} times; {e}")
                 self.counter += 1
+            except (KeyboardInterrupt, ClientOSError):
+                logger.info(f"Stopping bot for token: {self._token}")
+                break
             except Exception as e:
                 logger.error(f"Start error: {e}")
-            finally:
-                pass
 
     def stop(self):
         self.dp.stop_polling()

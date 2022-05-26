@@ -1,11 +1,11 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="__main__" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+  <configuration default="false" name="run_locally" type="PythonConfigurationType" factoryName="Python">
     <module name="tb_friend_invest" />
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="true" />
     <envs>
       <env name="PYTHONUNBUFFERED" value="1" />
-      <env name="TOKEN" value="5219827139:AAG957jn4MjYflZ--uM6-5xiWS1ko0MahNg" />
+      <env name="TOKEN" value="5364158061:AAFh-9syEN3vxTlJP714j8QFB64I5Qxq7f8" />
     </envs>
     <option name="SDK_HOME" value="" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/compose_folder/share_invest" />

@@ -26,10 +26,13 @@ class SetAmounts(StatesGroup):
     units = State()
 
 
+# @Service.dp.chat_join_request_handler()
 @Service.dp.message_handler(commands='start')
 async def start_handler(message: types.Message, state=FSMContext):
     async with state.proxy() as data:
-        data['invoice'] = ShareCalculator()
+        data['order'] = ShareCalculator()
+        data['order_id'] = id(data['order'])
+        logger.info(f"Order: {id(data['order'])}")
     await SetAmounts.amount.set()
     await message.reply(f"""Enter overall price""")
 
@@ -38,7 +41,8 @@ async def start_handler(message: types.Message, state=FSMContext):
                             state=SetAmounts.amount)
 async def add_participant_handler(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
-        data['invoice'].set_amount(float(message.text))
+        data['order'].set_amount(float(message.text))
+        logger.info(f"Order price: {float(message.text)}")
         await SetAmounts.next()
         await message.reply("Purchase count?")
 
@@ -47,8 +51,8 @@ async def add_participant_handler(message: types.Message, state: FSMContext):
                             state=SetAmounts.units)
 async def set_amount_handler(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
-        data['invoice'].set_units(float(message.text))
-        await message.reply(f"""Purchasing: {data['invoice'].purchase}
+        data['order'].set_units(float(message.text))
+        await message.reply(f"""Purchasing: {data['order'].purchase}
         Add participants with /participant ,
         generate /invoice
         or /cancel purchase""")
@@ -58,7 +62,7 @@ async def set_amount_handler(message: types.Message, state: FSMContext):
 async def add_participant_handler(message: types.Message, state: FSMContext):
     try:
         async with state.proxy() as data:
-            assert 'invoice' in data.keys()
+            assert 'order' in data.keys()
         await AddParticipant.name.set()
         await message.reply(f"Enter person name?")
     except AssertionError:
@@ -76,27 +80,31 @@ async def add_participant_name_handler(message: types.Message, state: FSMContext
 @Service.dp.message_handler(state=AddParticipant.amount)
 async def set_participant_involvement_handler(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
-        data['invoice'].add_amount_per_participant(data['name'], float(message.text))
-        await state.finish()
-        if data['invoice'].invoice_ready:
-            await message.reply(f"""Purchasing: {data['invoice'].purchase['price']}
+        data['order'].add_amount_per_participant(data['name'], float(message.text))
+        if data['order'].invoice_ready:
+            await message.reply(f"""Purchasing: {data['order'].purchase['price']}
                     You are ready for generate /invoice
                     or /cancel purchase""")
         else:
-            await message.reply(f"""Purchasing: {data['invoice'].purchase['price']}
+            await message.reply(f"""Purchasing: {data['order'].purchase['price']}
                     Continue /participant adding 
                     or /cancel purchase""")
+    await state.finish()
+    assert data.get('order', False), "No order placed"
+    assert data.get('order_id', 0) == id(data.get('order', False)), \
+        f"Wrong order placed ({data.get('order_id', 0)} !=? {id(data.get('order', False))})"
 
 
-@Service.dp.message_handler(commands=['invoice'], state='*')
+@Service.dp.message_handler(commands=['order'], state='*')
 async def generate_invoice(message: types.Message, state: FSMContext):
     try:
         async with state.proxy() as data:
-            result = data['invoice'].invoice
+            order = data['order']
+            result = order.invoice
             res_txt = "Overall price is: {price}; Count are: {count}\n------------------------\n".format(
-                **data['invoice'].purchase
+                **order.purchase
             )
-            del data['invoice']
+            del data['order']
             await state.finish()
 
         for name, item in result.items():
@@ -111,7 +119,7 @@ async def generate_invoice(message: types.Message, state: FSMContext):
 @Service.dp.message_handler(Text(equals='cancel', ignore_case=True), state='*')
 async def cancel_handler(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
-        del data['invoice']
+        del data['order']
         await state.finish()
     await message.reply('ОК')
 
