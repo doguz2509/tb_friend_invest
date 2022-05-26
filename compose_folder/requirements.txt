@@ -2,3 +2,4 @@ PyYAML~=6.0
 aiogram~=2.20
 setuptools
 wheel~=0.37.1
+googletrans==4.0.0rc1
